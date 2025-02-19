@@ -237,6 +237,51 @@ class AppData extends ChangeNotifier {
         }
         break;
 
+     case 'draw_square':
+        if (parameters['x'] != null && parameters['y'] != null && parameters['size'] != null) {
+          final x = parseDouble(parameters['x']);
+          final y = parseDouble(parameters['y']);
+          final size = max(0.0, parseDouble(parameters['size']));
+
+          final topLeft = Offset(x, y);
+          final bottomRight = Offset(x + size, y + size);
+
+          addDrawable(Rectangle(topLeft: topLeft, bottomRight: bottomRight));
+        } else {
+          print("Missing square properties: $parameters");
+        }
+      
+      break;
+
+
+      case 'draw_text':
+        if (parameters['text'] != null && parameters['x'] != null && parameters['y'] != null) {
+          final text = parameters['text'];
+          final x = parseDouble(parameters['x']);
+          final y = parseDouble(parameters['y']);
+          final fontSize = parseDouble(parameters['fontSize'] ?? 30.0);
+          final colorString = parameters['color'] ?? "#000000";
+
+          Color color = Colors.black;
+          try {
+            if (colorString.startsWith("#") && colorString.length == 7) {
+              color = Color(int.parse("0xFF${colorString.substring(1)}"));
+            }
+          } catch (e) {
+            print("Error parsing color: $colorString, using default black.");
+          }
+
+          addDrawable(TextElement(
+            text: text,
+            position: Offset(x, y),
+            fontSize: fontSize,
+            color: color,
+          ));
+        } else {
+          print("Missing text properties: $parameters");
+        }
+      break;
+
       default:
         print("Unknown function call: ${fixedJson['name']}");
     }

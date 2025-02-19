@@ -52,5 +52,39 @@ const tools = [
         "required": ["topLeftX", "topLeftY", "bottomRightX", "bottomRightY"]
       }
     }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "draw_square",
+      "description": "Dibuixa un quadrat donat el seu punt d'origen (x, y) i la seva mida (size).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "x": {"type": "number"},
+          "y": {"type": "number"},
+          "size": {"type": "number"}
+        },
+        "required": ["x", "y", "size"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "draw_text",
+      "description": "Dibuixa un text a la pantalla en una posicio determinada",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {"type": "string"},
+          "x": {"type": "number"},
+          "y": {"type": "number"},
+          "fontSize": {"type": "number"},
+          "color": {"type": "string"}
+        },
+        "required": ["text", "x", "y"]
+      }
+    }
   }
 ];
