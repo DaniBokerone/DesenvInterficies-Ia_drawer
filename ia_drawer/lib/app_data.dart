@@ -179,6 +179,18 @@ class AppData extends ChangeNotifier {
     return 0.0;
   }
 
+  Color parseColor(dynamic colorParam) {
+    if (colorParam is String && colorParam.startsWith("#") && colorParam.length == 7) {
+      try {
+        return Color(int.parse("0xFF${colorParam.substring(1)}"));
+      } catch (e) {
+        print("Error parsing color: $colorParam, using default black.");
+      }
+    }
+    return Colors.black; // Default negro
+  }
+
+
   void _processFunctionCall(Map<String, dynamic> functionCall) {
     final fixedJson = fixJsonInStrings(functionCall);
     final parameters = fixedJson['arguments'];
@@ -191,54 +203,69 @@ class AppData extends ChangeNotifier {
 
     switch (name) {
       case 'draw_circle':
-        if (parameters['x'] != null &&
-            parameters['y'] != null &&
-            parameters['radius'] != null) {
+        if (parameters['x'] != null && parameters['y'] != null && parameters['radius'] != null) {
           final dx = parseDouble(parameters['x']);
           final dy = parseDouble(parameters['y']);
           final radius = max(0.0, parseDouble(parameters['radius']));
-          addDrawable(Circle(center: Offset(dx, dy), radius: radius));
+
+          final contColor = parseColor(parameters['cont_color']);
+          final intColor = parseColor(parameters['int_color']);
+
+          addDrawable(Circle(
+            center: Offset(dx, dy),
+            radius: radius,
+            contColor: contColor,
+            intColor: intColor,
+          ));
         } else {
           print("Missing circle properties: $parameters");
         }
         break;
 
       case 'draw_line':
-        if (parameters['startX'] != null &&
-            parameters['startY'] != null &&
-            parameters['endX'] != null &&
-            parameters['endY'] != null) {
+        if (parameters['startX'] != null && parameters['startY'] != null &&
+            parameters['endX'] != null && parameters['endY'] != null) {
           final startX = parseDouble(parameters['startX']);
           final startY = parseDouble(parameters['startY']);
           final endX = parseDouble(parameters['endX']);
           final endY = parseDouble(parameters['endY']);
           final start = Offset(startX, startY);
           final end = Offset(endX, endY);
-          addDrawable(Line(start: start, end: end));
+
+          final contColor = parseColor(parameters['cont_color']);
+
+          addDrawable(Line(start: start, end: end, contColor: contColor));
         } else {
           print("Missing line properties: $parameters");
         }
         break;
 
       case 'draw_rectangle':
-        if (parameters['topLeftX'] != null &&
-            parameters['topLeftY'] != null &&
-            parameters['bottomRightX'] != null &&
-            parameters['bottomRightY'] != null) {
+        if (parameters['topLeftX'] != null && parameters['topLeftY'] != null &&
+            parameters['bottomRightX'] != null && parameters['bottomRightY'] != null) {
           final topLeftX = parseDouble(parameters['topLeftX']);
           final topLeftY = parseDouble(parameters['topLeftY']);
           final bottomRightX = parseDouble(parameters['bottomRightX']);
           final bottomRightY = parseDouble(parameters['bottomRightY']);
           final topLeft = Offset(topLeftX, topLeftY);
           final bottomRight = Offset(bottomRightX, bottomRightY);
-          addDrawable(Rectangle(topLeft: topLeft, bottomRight: bottomRight));
+
+          final contColor = parseColor(parameters['cont_color']);
+          final intColor = parseColor(parameters['int_color']);
+
+          addDrawable(Rectangle(
+            topLeft: topLeft,
+            bottomRight: bottomRight,
+            contColor: contColor,
+            intColor: intColor,
+          ));
         } else {
           print("Missing rectangle properties: $parameters");
         }
         break;
 
-     case 'draw_square':
-        if (parameters['x'] != null && parameters['y'] != null && parameters['size'] != null) {
+      case 'draw_square':
+        if (parameters['x'] != null && parameters['y'] != null) {
           final x = parseDouble(parameters['x']);
           final y = parseDouble(parameters['y']);
           final size = max(0.0, parseDouble(parameters['size']));
@@ -246,13 +273,19 @@ class AppData extends ChangeNotifier {
           final topLeft = Offset(x, y);
           final bottomRight = Offset(x + size, y + size);
 
-          addDrawable(Rectangle(topLeft: topLeft, bottomRight: bottomRight));
+          final contColor = parseColor(parameters['cont_color']);
+          final intColor = parseColor(parameters['int_color']);
+
+          addDrawable(Rectangle(
+            topLeft: topLeft,
+            bottomRight: bottomRight,
+            contColor: contColor,
+            intColor: intColor,
+          ));
         } else {
           print("Missing square properties: $parameters");
         }
-      
-      break;
-
+        break;
 
       case 'draw_text':
         if (parameters['text'] != null && parameters['x'] != null && parameters['y'] != null) {
@@ -260,27 +293,19 @@ class AppData extends ChangeNotifier {
           final x = parseDouble(parameters['x']);
           final y = parseDouble(parameters['y']);
           final fontSize = parseDouble(parameters['fontSize'] ?? 30.0);
-          final colorString = parameters['color'] ?? "#000000";
 
-          Color color = Colors.black;
-          try {
-            if (colorString.startsWith("#") && colorString.length == 7) {
-              color = Color(int.parse("0xFF${colorString.substring(1)}"));
-            }
-          } catch (e) {
-            print("Error parsing color: $colorString, using default black.");
-          }
+          final contColor = parseColor(parameters['cont_color']);
 
           addDrawable(TextElement(
             text: text,
             position: Offset(x, y),
             fontSize: fontSize,
-            color: color,
+            contColor: contColor,
           ));
         } else {
           print("Missing text properties: $parameters");
         }
-      break;
+        break;
 
       default:
         print("Unknown function call: ${fixedJson['name']}");
