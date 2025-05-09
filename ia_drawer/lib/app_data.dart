@@ -244,27 +244,52 @@ class AppData extends ChangeNotifier {
       }
       break;
 
-    case 'draw_rectangle':
-      if (parameters['topLeftX'] != null &&
-          parameters['topLeftY'] != null &&
-          parameters['bottomRightX'] != null &&
-          parameters['bottomRightY'] != null) {
-        final topLeft = Offset(parameters['topLeftX'].toDouble(), parameters['topLeftY'].toDouble());
-        final bottomRight = Offset(parameters['bottomRightX'].toDouble(), parameters['bottomRightY'].toDouble());
+      case 'draw_rectangle':
+        if (parameters['topLeftX'] != null &&
+            parameters['topLeftY'] != null &&
+            parameters['bottomRightX'] != null &&
+            parameters['bottomRightY'] != null) {
 
-        final contColor = parseColor(parameters['cont_color']);
-        final intColor = parseColor(parameters['int_color']);
+          final topLeft = Offset(
+            parameters['topLeftX'].toDouble(),
+            parameters['topLeftY'].toDouble(),
+          );
+          final bottomRight = Offset(
+            parameters['bottomRightX'].toDouble(),
+            parameters['bottomRightY'].toDouble(),
+          );
 
-        addDrawable(Rectangle(
-          topLeft: topLeft,
-          bottomRight: bottomRight,
-          contColor: contColor,
-          intColor: intColor,
-        ));
-      } else {
-        print("Missing rectangle properties: $parameters");
-      }
-      break;
+          final contColor = parseColor(parameters['cont_color']);
+
+          // Gestionar intColor y gradientes
+          Color? intColor;
+          List<Color>? gradientColors;
+
+          final fillColor = parameters['int_color'];
+
+          if (fillColor is Map<String, dynamic>) {
+            if (fillColor.containsKey('startColor') && fillColor.containsKey('endColor')) {
+              gradientColors = [
+                parseColor(fillColor['startColor']),
+                parseColor(fillColor['endColor']),
+              ];
+            }
+          } else if (fillColor is String) {
+            intColor = parseColor(fillColor);
+          }
+
+          addDrawable(Rectangle(
+            topLeft: topLeft,
+            bottomRight: bottomRight,
+            contColor: contColor,
+            intColor: intColor,
+            intGradient: gradientColors,
+          ));
+        } else {
+          print("Missing rectangle properties: $parameters");
+        }
+        break;
+
 
     case 'draw_square':
       if (parameters['x'] != null && parameters['y'] != null) {
