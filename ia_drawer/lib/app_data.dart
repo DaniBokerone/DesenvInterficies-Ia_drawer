@@ -203,109 +203,111 @@ class AppData extends ChangeNotifier {
 
     switch (name) {
       case 'draw_circle':
-        if (parameters['x'] != null && parameters['y'] != null && parameters['radius'] != null) {
-          final dx = parseDouble(parameters['x']);
-          final dy = parseDouble(parameters['y']);
-          final radius = max(0.0, parseDouble(parameters['radius']));
+      if (parameters['x'] != null && parameters['y'] != null) {
+        final dx = parameters['x'].toDouble();
+        final dy = parameters['y'].toDouble();
+        final radius = parameters.containsKey('radius')
+            ? max(0.0, (parameters['radius'] as num).toDouble())
+            : 10.0;
 
-          final contColor = parseColor(parameters['cont_color']);
-          final intColor = parseColor(parameters['int_color']);
+        final contColor = parseColor(parameters['cont_color']);
+        final intColor = parseColor(parameters['int_color']);
 
-          addDrawable(Circle(
-            center: Offset(dx, dy),
-            radius: radius,
-            contColor: contColor,
-            intColor: intColor,
-          ));
-        } else {
-          print("Missing circle properties: $parameters");
-        }
-        break;
+        addDrawable(Circle(
+          center: Offset(dx, dy),
+          radius: radius,
+          contColor: contColor,
+          intColor: intColor,
+        ));
+      } else {
+        print("Missing circle properties: $parameters");
+      }
+      break;
 
-      case 'draw_line':
-        if (parameters['startX'] != null && parameters['startY'] != null &&
-            parameters['endX'] != null && parameters['endY'] != null) {
-          final startX = parseDouble(parameters['startX']);
-          final startY = parseDouble(parameters['startY']);
-          final endX = parseDouble(parameters['endX']);
-          final endY = parseDouble(parameters['endY']);
-          final start = Offset(startX, startY);
-          final end = Offset(endX, endY);
+    case 'draw_line':
+      if (parameters['startX'] != null &&
+          parameters['startY'] != null &&
+          parameters['endX'] != null &&
+          parameters['endY'] != null) {
+        final startX = parameters['startX'].toDouble();
+        final startY = parameters['startY'].toDouble();
+        final endX = parameters['endX'].toDouble();
+        final endY = parameters['endY'].toDouble();
+        final start = Offset(startX, startY);
+        final end = Offset(endX, endY);
 
-          final contColor = parseColor(parameters['cont_color']);
+        final contColor = parseColor(parameters['cont_color']);
 
-          addDrawable(Line(start: start, end: end, contColor: contColor));
-        } else {
-          print("Missing line properties: $parameters");
-        }
-        break;
+        addDrawable(Line(start: start, end: end, contColor: contColor));
+      } else {
+        print("Missing line properties: $parameters");
+      }
+      break;
 
-      case 'draw_rectangle':
-        if (parameters['topLeftX'] != null && parameters['topLeftY'] != null &&
-            parameters['bottomRightX'] != null && parameters['bottomRightY'] != null) {
-          final topLeftX = parseDouble(parameters['topLeftX']);
-          final topLeftY = parseDouble(parameters['topLeftY']);
-          final bottomRightX = parseDouble(parameters['bottomRightX']);
-          final bottomRightY = parseDouble(parameters['bottomRightY']);
-          final topLeft = Offset(topLeftX, topLeftY);
-          final bottomRight = Offset(bottomRightX, bottomRightY);
+    case 'draw_rectangle':
+      if (parameters['topLeftX'] != null &&
+          parameters['topLeftY'] != null &&
+          parameters['bottomRightX'] != null &&
+          parameters['bottomRightY'] != null) {
+        final topLeft = Offset(parameters['topLeftX'].toDouble(), parameters['topLeftY'].toDouble());
+        final bottomRight = Offset(parameters['bottomRightX'].toDouble(), parameters['bottomRightY'].toDouble());
 
-          final contColor = parseColor(parameters['cont_color']);
-          final intColor = parseColor(parameters['int_color']);
+        final contColor = parseColor(parameters['cont_color']);
+        final intColor = parseColor(parameters['int_color']);
 
-          addDrawable(Rectangle(
-            topLeft: topLeft,
-            bottomRight: bottomRight,
-            contColor: contColor,
-            intColor: intColor,
-          ));
-        } else {
-          print("Missing rectangle properties: $parameters");
-        }
-        break;
+        addDrawable(Rectangle(
+          topLeft: topLeft,
+          bottomRight: bottomRight,
+          contColor: contColor,
+          intColor: intColor,
+        ));
+      } else {
+        print("Missing rectangle properties: $parameters");
+      }
+      break;
 
-      case 'draw_square':
-        if (parameters['x'] != null && parameters['y'] != null) {
-          final x = parseDouble(parameters['x']);
-          final y = parseDouble(parameters['y']);
-          final size = max(0.0, parseDouble(parameters['size']));
+    case 'draw_square':
+      if (parameters['x'] != null && parameters['y'] != null) {
+        final x = parameters['x'].toDouble();
+        final y = parameters['y'].toDouble();
+        final size = parameters.containsKey('size') ? max<num>(0.0, (parameters['size'] as num).toDouble()) : 10.0;
 
-          final topLeft = Offset(x, y);
-          final bottomRight = Offset(x + size, y + size);
+        final topLeft = Offset(x, y);
+        final bottomRight = Offset(x + size, y + size);
 
-          final contColor = parseColor(parameters['cont_color']);
-          final intColor = parseColor(parameters['int_color']);
+        final contColor = parseColor(parameters['cont_color']);
+        final intColor = parseColor(parameters['int_color']);
 
-          addDrawable(Rectangle(
-            topLeft: topLeft,
-            bottomRight: bottomRight,
-            contColor: contColor,
-            intColor: intColor,
-          ));
-        } else {
-          print("Missing square properties: $parameters");
-        }
-        break;
+        addDrawable(Rectangle(
+          topLeft: topLeft,
+          bottomRight: bottomRight,
+          contColor: contColor,
+          intColor: intColor,
+        ));
+      } else {
+        print("Missing square properties: $parameters");
+      }
+      break;
 
-      case 'draw_text':
-        if (parameters['text'] != null && parameters['x'] != null && parameters['y'] != null) {
-          final text = parameters['text'];
-          final x = parseDouble(parameters['x']);
-          final y = parseDouble(parameters['y']);
-          final fontSize = parseDouble(parameters['fontSize'] ?? 30.0);
+    case 'draw_text':
+      if (parameters['text'] != null && parameters['x'] != null && parameters['y'] != null) {
+        final text = parameters['text'];
+        final x = parameters['x'].toDouble();
+        final y = parameters['y'].toDouble();
+        final fontSize = parameters.containsKey('fontSize') ? parameters['fontSize'].toDouble() : 30.0;
 
-          final contColor = parseColor(parameters['cont_color']);
+        final contColor = parseColor(parameters['cont_color']);
 
-          addDrawable(TextElement(
-            text: text,
-            position: Offset(x, y),
-            fontSize: fontSize,
-            contColor: contColor,
-          ));
-        } else {
-          print("Missing text properties: $parameters");
-        }
-        break;
+        addDrawable(TextElement(
+          text: text,
+          position: Offset(x, y),
+          fontSize: fontSize,
+          contColor: contColor,
+        ));
+      } else {
+        print("Missing text properties: $parameters");
+      }
+      break;
 
       default:
         print("Unknown function call: ${fixedJson['name']}");
